@@ -13,6 +13,7 @@
               v-model:value="formValue.email"
               placeholder="votre@email.com"
               type="email"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NFormItem required path="password" label="Mot-de-passe">
@@ -21,6 +22,7 @@
               show-password-on="click"
               placeholder="••••••••"
               type="password"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NButton

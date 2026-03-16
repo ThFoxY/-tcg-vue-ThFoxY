@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import CreateDeckPage from '@/pages/CreateDeckPage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import SignInPage from '@/pages/SignInPage.vue'
 import SignUpPage from '@/pages/SignUpPage.vue'
@@ -17,12 +18,18 @@ export const ROUTES = {
   HOME: '/',
   SIGN_IN: '/sign-in',
   SIGN_UP: '/sign-up',
+  CREATE_DECK: '/create-deck',
 } as const
 
 const routes = [
   { path: ROUTES.HOME, component: HomePage, meta: { requiresAuth: true } },
   { path: ROUTES.SIGN_IN, component: SignInPage },
   { path: ROUTES.SIGN_UP, component: SignUpPage },
+  {
+    path: ROUTES.CREATE_DECK,
+    component: CreateDeckPage,
+    meta: { requiresAuth: true },
+  },
 ]
 
 // Définition des routes
