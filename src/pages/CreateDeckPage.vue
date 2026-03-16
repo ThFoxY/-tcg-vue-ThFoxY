@@ -25,6 +25,7 @@
           </NButton>
         </NFlex>
       </NForm>
+      <NDivider />
       <PokemonCardGrid :pokemons="cards" />
     </NCard>
   </NFlex>
@@ -32,14 +33,15 @@
 
 <script setup lang="ts">
 import type { FormInst, FormRules, FormValidationError } from 'naive-ui'
-import { useMessage } from 'naive-ui'
-import { onMounted, ref, watch } from 'vue'
+import { useLoadingBar, useMessage } from 'naive-ui'
+import { onMounted, ref } from 'vue'
 
 import PageTitle from '@/components/layout/PageTitle.vue'
 import PokemonCardGrid from '@/components/layout/PokemonCardsGrid.vue'
 import { useApi } from '@/composables/useApi'
 import type { Card } from '@/types'
 
+const loadingBar = useLoadingBar()
 const message = useMessage()
 const api = useApi()
 
@@ -71,6 +73,7 @@ const handleCreateDeck = () => {
 
 // Fonction anonyme asynchrone qui récupère les cartes depuis l'API
 const fetchCards = async () => {
+  loadingBar.start()
   try {
     const response = await api.getCards()
     cards.value = response
@@ -78,20 +81,14 @@ const fetchCards = async () => {
     message.error(
       `Erreur lors du chargement des cartes : ${(error as Error).message}`,
     )
+    loadingBar.error()
+  } finally {
+    loadingBar.finish()
   }
 }
 
 // Monte le composant et récupère les cartes depuis l'API
 onMounted(fetchCards)
-
-// Observe le changement de valeur de cards et met à jour la grille de cartes
-watch(
-  cards,
-  (_newCards) => {
-    fetchCards()
-  },
-  { deep: true },
-)
 </script>
 
 <style scoped>

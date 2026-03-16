@@ -1,6 +1,8 @@
 <template>
   <NFlex justify="left" align="center">
-    <NIcon size="16" @click="router.back()"><IconChevronLeft /></NIcon>
+    <NIcon size="24" style="cursor: pointer" @click="router.back()">
+      <IconChevronLeft />
+    </NIcon>
     <h1>{{ title }}</h1>
   </NFlex>
 </template>
@@ -16,3 +18,5 @@ defineProps<{
 // Récupère les routeurs pour la navigation
 const router = useRouter()
 </script>
+
+<style scoped></style>
