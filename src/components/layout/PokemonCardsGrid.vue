@@ -1,7 +1,13 @@
 <template>
   <NGrid cols="4" :x-gap="16" :y-gap="16">
     <NGridItem v-for="pokemon in pokemons" :key="pokemon.id">
-      <PokemonCard :pokemon="pokemon" size="sd" />
+      <PokemonCard
+        size="sm"
+        :pokemon="pokemon"
+        :selected="selectedPokemonsIds.includes(pokemon.id)"
+        :disabled="!selectedPokemonsIds.includes(pokemon.id) && maxReached"
+        @click="toggleSelect(pokemon.id)"
+      />
     </NGridItem>
   </NGrid>
 </template>
@@ -10,5 +16,11 @@
 import PokemonCard from '@/components/layout/PokemonCard.vue'
 import type { Card } from '@/types'
 
-defineProps<{ pokemons: Card[] }>()
+// Liste de props
+defineProps<{
+  pokemons: Card[]
+  selectedPokemonsIds: number[] // Liste des IDs des cartes sélectionnées pour le deck
+  maxReached: boolean // Indique si le nombre maximum de cartes sélectionnées (10) a été atteint
+  toggleSelect: (pokemonId: number) => void // Fonction pour sélectionner/désélectionner une carte
+}>()
 </script>

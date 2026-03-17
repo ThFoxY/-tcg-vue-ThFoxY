@@ -11,8 +11,9 @@
 import { IconChevronLeft } from '@tabler/icons-vue'
 import { useRouter } from 'vue-router'
 
+// Liste des props
 defineProps<{
-  title: string
+  title: string // Titre de la page à afficher
 }>()
 
 // Récupère les routeurs pour la navigation
