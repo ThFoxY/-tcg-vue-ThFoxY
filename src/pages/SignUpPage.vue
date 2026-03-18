@@ -13,6 +13,7 @@
               v-model:value="formValue.username"
               placeholder="Dresseur42"
               type="text"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NFormItem required path="email" label="Email">
@@ -20,6 +21,7 @@
               v-model:value="formValue.email"
               placeholder="votre@email.com"
               type="email"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NFormItem required path="password" label="Mot-de-passe">
@@ -28,6 +30,7 @@
               show-password-on="click"
               placeholder="••••••••"
               type="password"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NButton
@@ -68,14 +71,15 @@ const authStore = useAuthStore()
 const message = useMessage()
 const router = useRouter()
 
-const formRef = ref<FormInst | null>(null)
+const formRef = ref<FormInst | null>(null) // Référence au formulaire
 const formValue = ref<SignUpPayload>({
   email: '',
   password: '',
   username: '',
-})
-const isLoading = ref<boolean>(false)
+}) // Payload du formulaire d'inscription
+const isLoading = ref<boolean>(false) // Stocke l'état de chargement de l'API
 
+// Défini les règles de validation du formulaire
 const rules: FormRules = {
   username: {
     required: true,
@@ -98,7 +102,7 @@ const rules: FormRules = {
   },
 }
 
-// Fonction anonyme qui gère l'inscription à la validation du formulaire
+// Fonction anonyme asynchrone qui gère l'inscription à la validation du formulaire
 const handleSignUp = async () => {
   // Valide le formulaire avant de soumettre (affiche les erreurs si invalides)
   formRef.value?.validate(async (errors: FormValidationError[] | undefined) => {

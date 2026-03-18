@@ -1,14 +1,16 @@
 <template>
-  <NConfigProvider>
-    <NMessageProvider>
-      <NLayout>
-        <HeaderBar v-if="authStore.isAuthentificated" />
-        <NLayoutContent>
-          <RouterView />
-        </NLayoutContent>
-      </NLayout>
-    </NMessageProvider>
-  </NConfigProvider>
+  <NLoadingBarProvider>
+    <NConfigProvider>
+      <NMessageProvider>
+        <NLayout>
+          <HeaderBar v-if="authStore.isAuthentificated" />
+          <NLayoutContent>
+            <RouterView />
+          </NLayoutContent>
+        </NLayout>
+      </NMessageProvider>
+    </NConfigProvider>
+  </NLoadingBarProvider>
 </template>
 
 <script setup lang="ts">
