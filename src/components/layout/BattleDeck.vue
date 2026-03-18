@@ -8,6 +8,7 @@
           :pokemon="getCard(card)!"
           :selected="false"
           :disabled="false"
+          :current-hp="null"
         />
       </NGridItem>
     </NGrid>
@@ -16,28 +17,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-
 import PokemonCard from '@/components/layout/PokemonCard.vue'
-import { useApi } from '@/composables/useApi'
 import type { Card, Deck, DeckCard } from '@/types'
 
-const api = useApi()
-const cards = ref<Card[]>([]) // Stocke toutes les cartes récupérées depuis l'API
+// Liste des props
+const props = defineProps<{
+  deck: Deck // Deck à afficher
+  cards: Card[] // Liste de toutes les cartes Pokémon pour éviter les appels redondants à l'API dans chaque deck
+}>()
 
-// Fonction anonyme qui renvoie l'objet Card correspondant à un objet DeckCard
+// Fonction anonyme qui récupère la carte Pokémon correspondante à une carte de deck, en comparant les IDs.
 const getCard = (deckCard: DeckCard): Card | undefined => {
   // On compare l'ID de la carte avec celle du deck. Si elle correspond, ça veut dire qu'elle est dans le deck ! ^^o
-  return cards.value.find((card) => card.id === deckCard.cardId)
+  // Avoir déclaré 'defineProps' en tant que variable permet d'y accéder
+  return props.cards.find((card) => card.id === deckCard.cardId)
 }
-
-// Récupérer les cartes depuis l'API pour pouvoir les afficher dans les decks
-onMounted(async () => {
-  cards.value = await api.getCards()
-})
-
-// Liste des props
-defineProps<{
-  deck: Deck
-}>()
 </script>

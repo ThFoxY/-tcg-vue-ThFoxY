@@ -13,7 +13,22 @@
         :color="{ color: getTypeColor(pokemon.type), textColor: '#fff' }"
         >{{ pokemon.type }}</NTag
       >
-      <span>❤️ {{ pokemon.hp }} • 💥{{ pokemon.attack }}</span>
+      <span v-if="!currentHp">
+        ❤️ {{ pokemon.hp }} • 💥{{ pokemon.attack }}</span
+      >
+      <NProgress
+        v-if="currentHp"
+        type="line"
+        :percentage="(currentHp / pokemon.hp) * 100"
+        :height="4"
+        border-radius="12px 0 12px 0"
+        fill-border-radius="12px 0 12px 0"
+        :color="hpColor((currentHp / pokemon.hp) * 100)"
+      >
+        <template #default>
+          ❤️ {{ currentHp }}/{{ pokemon.hp }} • 💥{{ pokemon.attack }}
+        </template>
+      </NProgress>
     </NFlex>
     <NFlex v-else align="center">
       <NImage
@@ -33,8 +48,23 @@
           :color="{ color: getTypeColor(pokemon.type), textColor: '#fff' }"
           >{{ pokemon.type }}</NTag
         >
-        <span>❤️ {{ pokemon.hp }} • 💥{{ pokemon.attack }}</span>
+        <span v-if="!currentHp">
+          ❤️ {{ pokemon.hp }} • 💥{{ pokemon.attack }}</span
+        >
       </NFlex>
+      <NProgress
+        v-if="currentHp"
+        type="line"
+        :percentage="(currentHp / pokemon.hp) * 100"
+        :height="4"
+        border-radius="12px 0 12px 0"
+        fill-border-radius="12px 0 12px 0"
+        :color="hpColor((currentHp / pokemon.hp) * 100)"
+      >
+        <template #default>
+          ❤️ {{ currentHp }}/{{ pokemon.hp }} • 💥{{ pokemon.attack }}
+        </template>
+      </NProgress>
     </NFlex>
   </NCard>
 </template>
@@ -44,7 +74,7 @@ import { useColors } from '@/composables/useColors'
 import type { Card } from '@/types'
 
 // Récupérer la couleur en fonction du type du Pokémon
-const { getTypeColor } = useColors()
+const { getTypeColor, hpColor } = useColors()
 
 // Liste des props
 defineProps<{
@@ -52,6 +82,7 @@ defineProps<{
   pokemon: Card
   selected: boolean // Renvoie vrai si la carte est sélectionnée, sinon faux
   disabled: boolean // Renvoie vrai si la carte ne peut pas être sélectionnée (10 cartes déjà sélectionnées), sinon faux
+  currentHp: number | null // Affiche les HP courants du Pokémon (utile en duel)
 }>()
 
 // Émettre un événement "click" lorsque la carte est cliquée au composant parent (`PokemonCardsGrid.vue`)

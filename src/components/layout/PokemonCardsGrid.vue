@@ -2,10 +2,11 @@
   <NGrid cols="4" :x-gap="16" :y-gap="16">
     <NGridItem v-for="pokemon in pokemons" :key="pokemon.id">
       <PokemonCard
-        size="sm"
+        size="md"
         :pokemon="pokemon"
         :selected="selectedPokemonsIds.includes(pokemon.id)"
         :disabled="!selectedPokemonsIds.includes(pokemon.id) && maxReached"
+        :current-hp="null"
         @click="toggleSelect(pokemon.id)"
       />
     </NGridItem>

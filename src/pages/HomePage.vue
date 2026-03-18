@@ -9,15 +9,16 @@
         <template #icon>
           <NIcon>
             <IconPlus />
-          </NIcon> </template
-        >Nouveau deck</NButton
-      >
+          </NIcon>
+        </template>
+        Nouveau deck
+      </NButton>
     </template>
   </PageTitle>
   <NEmpty v-if="decks.length === 0" description="Aucun deck trouvé 🥲" />
   <NFlex v-else class="my-decks" justify="center" align="center" vertical>
-    <DeckCard v-for="deck in decks" :key="deck.id" :deck="deck">
-      <template #buttons>
+    <BattleDecksList v-if="decks.length > 0" :decks="decks" :cards="cards">
+      <template #buttons="{ deck }">
         <NFlex justify="end" align="center">
           <NDivider />
           <NButton
@@ -33,12 +34,11 @@
             type="error"
             size="small"
             @click="handleDeleteButton(deck.id)"
+            >Supprimer</NButton
           >
-            Supprimer
-          </NButton>
         </NFlex>
       </template>
-    </DeckCard>
+    </BattleDecksList>
   </NFlex>
   <NModal
     v-model:show="showModal"
@@ -57,11 +57,11 @@ import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import DeckCard from '@/components/layout/DeckCard.vue'
+import BattleDecksList from '@/components/layout/BattleDecksList.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'
-import type { Deck } from '@/types'
+import type { Card, Deck } from '@/types'
 
 const loadingBar = useLoadingBar()
 const message = useMessage()
@@ -69,21 +69,29 @@ const api = useApi()
 const router = useRouter()
 
 const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérées via l'API
+const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API
 const showModal = ref(false) // Affiche ou non la modal de confirmation de suppression
 const selectedDeckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour la suppression
+const isLoading = ref<boolean>(false) // Stocke l'état de chargement de l'API
 
-// Fonction anonyme asynchrone qui récupère les decks de l'utilisateur connecté
-const fetchDecks = async () => {
+// Fonction anonyme asynchrone qui récupère les decks et toutes les cartes Pokémon une seule fois depuis l'API
+// Explication : avant, chaque composant BattleDeck appelait l'API pour récupérer toutes les cartes, puis se les approprier en fonction de ses besoins.
+// Maintenant, l'appel est unique, puis transmis par les props. Cela évite un saut visuel lors du chargement des decks.
+const fetchData = async () => {
+  isLoading.value = true
   loadingBar.start()
   try {
-    const response = await api.getMyDecks()
-    decks.value = response
+    const [decksResponse, cardsResponse] = await Promise.all([
+      api.getMyDecks(),
+      api.getCards(),
+    ])
+    decks.value = decksResponse
+    cards.value = cardsResponse
   } catch (error) {
-    message.error(
-      `Erreur lors du chargement de vos decks : ${(error as Error).message}`,
-    )
+    message.error(`Erreur lors du chargement : ${(error as Error).message}`)
     loadingBar.error()
   } finally {
+    isLoading.value = false
     loadingBar.finish()
   }
 }
@@ -96,12 +104,12 @@ const handleDeleteButton = (deckId: number) => {
 
 // Fonction anonyme asynchrone qui gère la suppression d'un deck
 const handleDeleteDeck = async () => {
-  loadingBar.start()
   if (selectedDeckId.value === null) return
+  loadingBar.start()
   try {
     await api.deleteDeck(selectedDeckId.value)
     message.success('Deck supprimé avec succès !')
-    await fetchDecks() // Rafraîchit la liste des decks après suppression
+    await fetchData() // Rafraîchit la liste des decks après suppression
   } catch (error) {
     message.error(
       `Erreur lors de la suppression du deck : ${(error as Error).message}`,
@@ -114,12 +122,12 @@ const handleDeleteDeck = async () => {
   }
 }
 
-// Monte le composant et récupère les decks depuis l'API
-onMounted(fetchDecks)
+// Monte le composant et récupère les decks et les cartes depuis l'API
+onMounted(fetchData)
 </script>
 
 <style scoped>
 .n-card {
-  max-width: 1100px;
+  max-width: 1400px;
 }
 </style>
