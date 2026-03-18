@@ -1,5 +1,5 @@
 <template>
-  <PageTitle title="Créer un deck" />
+  <PageTitle title="Créer un deck" toggle-back />
   <NFlex class="create-deck" justify="center" align="center" vertical>
     <NCard>
       <NForm
@@ -30,7 +30,9 @@
         </NFlex>
       </NForm>
       <NDivider />
+      <NEmpty v-if="cards.length === 0" description="Aucune carte trouvée 🥲" />
       <PokemonCardGrid
+        v-else
         :pokemons="cards"
         :selected-pokemons-ids="selectedCardsIds"
         :toggle-select="toggleSelect"
