@@ -29,11 +29,10 @@
             >Voir le détail</NButton
           >
           <NButton
+            type="info"
             size="small"
             @click="
-              message.info(
-                'Cette fonctionnalité n\'est pas encore implémentée !',
-              )
+              router.push(ROUTES.EDIT_DECK.replace(':id', deck.id.toString()))
             "
             >Modifier</NButton
           >
@@ -64,7 +63,7 @@ import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import BattleDecksList from '@/components/layout/BattleDecksList.vue'
+import BattleDecksList from '@/components/BattleDecksList.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'

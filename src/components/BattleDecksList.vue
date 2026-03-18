@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import BattleDeck from '@/components/layout/BattleDeck.vue'
+import BattleDeck from '@/components/BattleDeck.vue'
 import type { Card, Deck } from '@/types'
 
 // Liste de props

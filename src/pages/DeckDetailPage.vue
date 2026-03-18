@@ -4,9 +4,7 @@
       <NButton
         type="primary"
         size="small"
-        @click="
-          message.info('Cette fonctionnalité n\'est pas encore implémentée !')
-        "
+        @click="router.push(ROUTES.EDIT_DECK.replace(':id', deckId.toString()))"
       >
         <template #icon>
           <NIcon>
@@ -29,15 +27,18 @@ import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import BattleDeck from '@/components/layout/BattleDeck.vue'
+import BattleDeck from '@/components/BattleDeck.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
 import { useApi } from '@/composables/useApi'
+import { ROUTES } from '@/router'
 import type { Card, Deck } from '@/types'
 
 const loadingBar = useLoadingBar()
 const message = useMessage()
 const api = useApi()
 const router = useRouter()
+
+const deckId = Number(router.currentRoute.value.params.id) // Récupère l'ID du deck depuis l'URL
 
 const deck = ref<Deck>() // Stocke le deck en objet Deck récupéré depuis l'API
 const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API

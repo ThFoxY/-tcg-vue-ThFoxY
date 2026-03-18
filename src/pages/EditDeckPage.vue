@@ -1,12 +1,12 @@
 <template>
-  <PageTitle title="Créer un deck" toggle-back />
+  <PageTitle title="Modifier le deck" toggle-back />
   <NFlex justify="center" align="center" vertical>
     <NCard>
       <NForm
         ref="formRef"
         :model="formValue"
         :rules="rules"
-        @submit.prevent="handleCreateDeck"
+        @submit.prevent="handleUpdateDeck"
       >
         <NFlex justify="start" align="center">
           <NFormItem required path="name" label="Nom du deck">
@@ -59,6 +59,8 @@ const message = useMessage()
 const api = useApi()
 const router = useRouter()
 
+const deckId = Number(router.currentRoute.value.params.id) // Récupère l'ID du deck depuis l'URL
+
 const formRef = ref<FormInst | null>(null) // Référence du formulaire
 const formValue = ref({ name: '' })
 const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API
@@ -77,25 +79,25 @@ const rules: FormRules = {
   },
 }
 
-// Fonction anonyme qui gère la création du deck à la validation du formulaire
-const handleCreateDeck = async () => {
+// Fonction anonyme qui gère la modification du deck à la validation du formulaire
+const handleUpdateDeck = async () => {
   // Valide le formulaire avant de soumettre (affiche les erreurs si invalides)
   formRef.value?.validate(async (errors: FormValidationError[] | undefined) => {
     // Si le formulaire est valide, tente de se connecter
     if (!errors) {
       isLoading.value = true
       try {
-        await api.createDeck({
+        await api.updateDeck(deckId, {
           name: formValue.value.name,
           cards: selectedCardsIds.value,
         })
-        message.success('Création du deck réussie !')
+        message.success('Modification du deck réussie !')
 
         // Redirige vers la page d'accueil ('/')
-        router.replace(ROUTES.HOME)
+        router.replace(ROUTES.DECK_DETAIL.replace(':id', deckId.toString()))
       } catch (error) {
         message.error(
-          `Erreur lors de la création du deck : ${(error as Error).message}`,
+          `Erreur lors de la modification du deck : ${(error as Error).message}`,
         )
       } finally {
         isLoading.value = false
@@ -107,15 +109,18 @@ const handleCreateDeck = async () => {
 }
 
 // Fonction anonyme asynchrone qui récupère les cartes depuis l'API
-const fetchCards = async () => {
+const fetchData = async () => {
   loadingBar.start()
   try {
-    const response = await api.getCards()
-    cards.value = response
+    const [deckResponse, cardsResponse] = await Promise.all([
+      api.getDeck(deckId),
+      api.getCards(),
+    ])
+    formValue.value.name = deckResponse.name
+    selectedCardsIds.value = deckResponse.cards.map((card) => card.cardId)
+    cards.value = cardsResponse
   } catch (error) {
-    message.error(
-      `Erreur lors du chargement des cartes : ${(error as Error).message}`,
-    )
+    message.error(`Erreur lors du chargement : ${(error as Error).message}`)
     loadingBar.error()
   } finally {
     loadingBar.finish()
@@ -141,8 +146,8 @@ const toggleSelect = (pokemonId: number) => {
   }
 }
 
-// Monte le composant et récupère les cartes depuis l'API
-onMounted(fetchCards)
+// Monte le composant et récupère le deck spécifique depuis l'API
+onMounted(fetchData)
 </script>
 
 <style scoped>

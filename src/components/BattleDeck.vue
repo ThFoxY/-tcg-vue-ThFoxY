@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import PokemonCard from '@/components/layout/PokemonCard.vue'
+import PokemonCard from '@/components/PokemonCard.vue'
 import type { Card, Deck, DeckCard } from '@/types'
 
 // Liste des props
