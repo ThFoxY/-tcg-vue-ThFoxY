@@ -24,6 +24,13 @@
           <NButton
             size="small"
             @click="
+              router.push(ROUTES.DECK_DETAIL.replace(':id', deck.id.toString()))
+            "
+            >Voir le détail</NButton
+          >
+          <NButton
+            size="small"
+            @click="
               message.info(
                 'Cette fonctionnalité n\'est pas encore implémentée !',
               )
@@ -68,7 +75,7 @@ const message = useMessage()
 const api = useApi()
 const router = useRouter()
 
-const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérées via l'API
+const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérés via l'API
 const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API
 const showModal = ref(false) // Affiche ou non la modal de confirmation de suppression
 const selectedDeckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour la suppression
