@@ -3,7 +3,8 @@
   "extends": "@vfourny/node-toolkit/tsconfig/node",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["vite.config.ts"]
 }
