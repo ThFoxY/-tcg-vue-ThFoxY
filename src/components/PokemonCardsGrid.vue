@@ -7,7 +7,7 @@
         :selected="selectedPokemonsIds.includes(pokemon.id)"
         :disabled="!selectedPokemonsIds.includes(pokemon.id) && maxReached"
         :current-hp="null"
-        @click="toggleSelect(pokemon.id)"
+        @click="emit('select', pokemon.id)"
       />
     </NGridItem>
   </NGrid>
@@ -22,6 +22,11 @@ defineProps<{
   pokemons: Card[]
   selectedPokemonsIds: number[] // Liste des IDs des cartes sélectionnées pour le deck
   maxReached: boolean // Indique si le nombre maximum de cartes sélectionnées (10) a été atteint
-  toggleSelect: (pokemonId: number) => void // Fonction pour sélectionner/désélectionner une carte
+}>()
+
+// FIX: Passer une fonction comme prop est un anti-pattern Vue, il est préférable d'émettre des événements pour communiquer les actions vers le parent 👍
+// Liste des événements émis
+const emit = defineEmits<{
+  select: [pokemonId: number] // Événement émis lorsqu'une carte est sélectionnée/désélectionnée, avec l'ID de la carte concernée
 }>()
 </script>

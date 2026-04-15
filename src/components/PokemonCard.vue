@@ -78,7 +78,7 @@ const { getTypeColor, hpColor } = useColors()
 
 // Liste des props
 defineProps<{
-  size: string // 'sm' -> affichage compact ou 'md' -> affichage classique
+  size: 'sm' | 'md' // 'sm' -> affichage compact ou 'md' -> affichage classique
   pokemon: Card
   selected: boolean // Renvoie vrai si la carte est sélectionnée, sinon faux
   disabled: boolean // Renvoie vrai si la carte ne peut pas être sélectionnée (10 cartes déjà sélectionnées), sinon faux

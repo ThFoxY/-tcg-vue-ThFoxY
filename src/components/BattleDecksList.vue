@@ -1,12 +1,10 @@
 <template>
-  <NFlex vertical>
-    <NFlex v-for="deck in decks" :key="deck.id" vertical>
-      <BattleDeck :deck="deck" :cards="cards">
-        <template #buttons>
-          <slot name="buttons" :deck="deck"></slot>
-        </template>
-      </BattleDeck>
-    </NFlex>
+  <NFlex v-for="deck in decks" :key="deck.id" vertical>
+    <BattleDeck :deck="deck" :cards="cards">
+      <template #buttons>
+        <slot name="buttons" :deck="deck"></slot>
+      </template>
+    </BattleDeck>
   </NFlex>
 </template>
 

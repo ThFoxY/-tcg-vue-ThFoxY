@@ -7,6 +7,7 @@
         :options="deckOptions"
         placeholder="Sélectionner un deck"
       />
+      <NDivider />
       <NButton :disabled="!deckId" type="primary">Créer la partie</NButton>
     </NCard>
 
@@ -111,6 +112,10 @@ const fetchData = async () => {
     ])
     decks.value = decksResponse
     cards.value = cardsResponse
+    deckOptions.value = decksResponse.map((deck) => ({
+      label: deck.name,
+      value: deck.id,
+    }))
   } catch (error) {
     message.error(`Erreur lors du chargement : ${(error as Error).message}`)
     loadingBar.error()

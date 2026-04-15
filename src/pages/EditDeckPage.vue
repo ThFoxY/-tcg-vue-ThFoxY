@@ -24,32 +24,33 @@
             type="primary"
             attr-type="submit"
           >
-            Créer le deck
+            Modifier le deck
           </NButton>
           <div>{{ selectedCardsIds.length }}/10 cartes sélectionnées</div>
         </NFlex>
       </NForm>
       <NDivider />
       <NEmpty v-if="cards.length === 0" description="Aucune carte trouvée 🥲" />
-      <PokemonCardGrid
+      <PokemonCardsGrid
         v-else
         :pokemons="cards"
         :selected-pokemons-ids="selectedCardsIds"
-        :toggle-select="toggleSelect"
         :max-reached="selectedCardsIds.length === 10"
+        @select="toggleSelect"
       />
     </NCard>
   </NFlex>
 </template>
 
 <script setup lang="ts">
+// TODO: Identique à CreateDeckPage.vue, factoriser dans un composable useDeckForm() ?
 import type { FormInst, FormRules, FormValidationError } from 'naive-ui'
 import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import PageTitle from '@/components/layout/PageTitle.vue'
-import PokemonCardGrid from '@/components/PokemonCardsGrid.vue'
+import PokemonCardsGrid from '@/components/PokemonCardsGrid.vue'
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'
 import type { Card } from '@/types'
@@ -93,7 +94,7 @@ const handleUpdateDeck = async () => {
         })
         message.success('Modification du deck réussie !')
 
-        // Redirige vers la page d'accueil ('/')
+        // Redirige vers la page de détail du deck modifié
         router.replace(ROUTES.DECK_DETAIL.replace(':id', deckId.toString()))
       } catch (error) {
         message.error(

@@ -31,25 +31,26 @@
       </NForm>
       <NDivider />
       <NEmpty v-if="cards.length === 0" description="Aucune carte trouvée 🥲" />
-      <PokemonCardGrid
+      <PokemonCardsGrid
         v-else
         :pokemons="cards"
         :selected-pokemons-ids="selectedCardsIds"
-        :toggle-select="toggleSelect"
         :max-reached="selectedCardsIds.length === 10"
+        @select="toggleSelect"
       />
     </NCard>
   </NFlex>
 </template>
 
 <script setup lang="ts">
+// TODO: Identique à EditDeckPage.vue, factoriser dans un composable useDeckForm() ?
 import type { FormInst, FormRules, FormValidationError } from 'naive-ui'
 import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import PageTitle from '@/components/layout/PageTitle.vue'
-import PokemonCardGrid from '@/components/PokemonCardsGrid.vue'
+import PokemonCardsGrid from '@/components/PokemonCardsGrid.vue'
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'
 import type { Card } from '@/types'

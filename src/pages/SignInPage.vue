@@ -100,7 +100,7 @@ const handleSignIn = async () => {
         router.replace(ROUTES.HOME)
       } catch (error) {
         message.error(
-          `Erreur lors de l'inscription : ${(error as Error).message}`,
+          `Erreur lors de la connexion : ${(error as Error).message}`, // FIX: Correction d'une erreur de frappe ^^
         )
       } finally {
         isLoading.value = false

@@ -25,7 +25,7 @@
 import { IconEdit } from '@tabler/icons-vue'
 import { useLoadingBar, useMessage } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router' // useRoute != useRouter, useRoute est utilisé pour accéder aux paramètres de l'URL, tandis que useRouter est utilisé pour naviguer vers d'autres routes (même si useRouter peut aussi accéder aux paramètres de l'URL via router.currentRoute.value.params !)
 
 import BattleDeck from '@/components/BattleDeck.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
@@ -48,7 +48,7 @@ const fetchData = async () => {
   loadingBar.start()
   try {
     const [deckResponse, cardsResponse] = await Promise.all([
-      api.getDeck(Number(router.currentRoute.value.params.id)),
+      api.getDeck(deckId), // FIX: Utilisation de deckId défini précédemment
       api.getCards(),
     ])
     deck.value = deckResponse

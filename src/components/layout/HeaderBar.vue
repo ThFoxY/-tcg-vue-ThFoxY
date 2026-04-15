@@ -7,7 +7,7 @@
       <NSpace align="center" :size="16">
         <RouterLink to="/">TCG SPA</RouterLink>
         <NDropdown
-          v-if="authStore.isAuthentificated"
+          v-if="authStore.isAuthenticated"
           :options="deckOptions"
           placement="bottom-start"
           trigger="hover"
@@ -19,7 +19,7 @@
       <NSpace align="center" :size="16">
         <NText depth="3">{{ authStore.user?.username }}</NText>
         <NButton
-          v-if="authStore.isAuthentificated"
+          v-if="authStore.isAuthenticated"
           size="small"
           @click="handleSignOut"
           >Déconnexion</NButton
@@ -66,7 +66,7 @@ const deckOptions = [
     label: 'Créer un deck',
     key: 'create-deck',
     icon: renderIcon(IconPencilPlus),
-    onClick: () => router.push(ROUTES.CREATE_DECK),
+    // FIX: onClick enlevé car géré par @select du composant NDropdown
   },
 ]
 

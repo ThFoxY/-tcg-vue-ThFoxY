@@ -56,12 +56,12 @@ router.beforeEach((to) => {
   // Récupère le store d'authentification pour vérifier si l'utilisateur est connecté
   const authStore = useAuthStore()
   // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route privée, redirige vers la page de connexion
-  if (to.meta.requiresAuth && !authStore.isAuthentificated) {
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return ROUTES.SIGN_IN
   }
   // Si l'utilisateur est déjà connecté et essaie d'accéder à la page de connexion ou d'inscription, redirige vers la page d'accueil
   if (
-    authStore.isAuthentificated &&
+    authStore.isAuthenticated &&
     (to.path === ROUTES.SIGN_IN || to.path === ROUTES.SIGN_UP)
   ) {
     return ROUTES.HOME

@@ -3,7 +3,7 @@
     <NConfigProvider>
       <NMessageProvider>
         <NLayout>
-          <HeaderBar v-if="authStore.isAuthentificated" />
+          <HeaderBar v-if="authStore.isAuthenticated" />
           <NLayoutContent>
             <RouterView />
           </NLayoutContent>
