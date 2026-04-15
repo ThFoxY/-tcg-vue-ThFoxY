@@ -26,7 +26,7 @@ export const ROUTES = {
 } as const
 
 const routes = [
-  { path: ROUTES.HOME, component: HomePage, meta: { requiresAuth: false } },
+  { path: ROUTES.HOME, component: HomePage, meta: { requiresAuth: true } },
   { path: ROUTES.SIGN_IN, component: SignInPage },
   { path: ROUTES.SIGN_UP, component: SignUpPage },
   {
@@ -57,7 +57,7 @@ router.beforeEach((to) => {
   const authStore = useAuthStore()
   // Si l'utilisateur n'est pas connecté et essaie d'accéder à une route privée, redirige vers la page de connexion
   if (to.meta.requiresAuth && !authStore.isAuthentificated) {
-    return ROUTES.HOME
+    return ROUTES.SIGN_IN
   }
   // Si l'utilisateur est déjà connecté et essaie d'accéder à la page de connexion ou d'inscription, redirige vers la page d'accueil
   if (
