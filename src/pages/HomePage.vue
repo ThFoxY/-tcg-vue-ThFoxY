@@ -91,7 +91,7 @@ const api = useApi()
 const router = useRouter()
 
 const deckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour créer une partie
-const deckOptions = ref<{ label: string; value: number }[]>([]) // Stocke les options pour le select de création de partie
+const deckOptions = ref<{ label: string; value: number }[]>([]) // Stocke les options de decks disponibles pour créer une partie
 
 const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérés via l'API
 const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API
