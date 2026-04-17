@@ -1,12 +1,12 @@
 <template>
   <NFlex vertical :gap="16">
-    <NFlex v-if="player" align="center" :gap="24">
-      <NStatistic label="KOs" :value="player.score ?? 0" />
+    <NFlex v-if="playerBoard" align="center" :gap="24">
+      <NStatistic label="KOs" :value="playerBoard.board.score ?? 0" />
       <PokemonCard
-        v-if="player.fieldCard"
+        v-if="playerBoard.board.activeCard"
         size="md"
-        :pokemon="player.fieldCard.card"
-        :current-hp="player.fieldCard.currentHp ?? 0"
+        :pokemon="playerBoard.board.activeCard.card"
+        :current-hp="playerBoard.board.activeCard.currentHp ?? 0"
         :selected="false"
         :disabled="true"
       />
@@ -15,10 +15,10 @@
     <NEmpty v-else description="Vous avez du retard 👀"></NEmpty>
   </NFlex>
   <NFlex align="center" :gap="8">
-    <NText>Main ({{ player?.handCards.length ?? 0 }}/5)</NText>
+    <NText>Main ({{ playerBoard?.board.hand.length ?? 0 }}/5)</NText>
   </NFlex>
   <NFlex :gap="8" wrap>
-    <div v-for="card in player?.handCards" :key="card.id">
+    <div v-for="card in playerBoard?.board.hand" :key="card.id">
       <PokemonCard
         size="sm"
         :pokemon="card"
@@ -30,7 +30,9 @@
     </div>
   </NFlex>
   <NFlex align="center" :gap="8">
-    <NText>Deck : {{ player?.deckSize ?? 0 }} cartes restantes</NText>
+    <NText
+      >Deck : {{ playerBoard?.board.deck.length ?? 0 }} cartes restantes</NText
+    >
   </NFlex>
 </template>
 
@@ -41,16 +43,13 @@ import PokemonCard from '@/components/PokemonCard.vue'
 import { useSocketStore } from '@/store/socket.store'
 
 const socketStore = useSocketStore()
+
 // Récupère les informations sur le joueur courant
-const player = computed(() =>
-  socketStore.playerRole === 'hôte'
-    ? socketStore.gameBoards?.host
-    : socketStore.gameBoards?.opponent,
-)
+const playerBoard = computed(() => socketStore.playerBoard)
 
 // RG2 : Détermine si les cartes sont jouables (tour du joueur courant et n'est pas déjà sur le terrain)
 // computed() permet de mettre à jour le booléen :disabled des cartes dès lors que les dépendances sont redéfinies (tour et carte jouée)
 const isCardPlayable = computed(
-  () => socketStore.playerTurn && !player.value?.fieldCard,
+  () => socketStore.playerTurn && !playerBoard.value?.board.activeCard,
 )
 </script>

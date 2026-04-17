@@ -1,53 +1,40 @@
 import type { Card } from './card'
 
+// FIX : Mise en accord avec les structures de données utilisées par le Socket.IO côté serveur
+
 /**
  * Interface typée pour gérer une Room, c'est-à-dire une salle de jeu où deux joueurs s'affrontent
  * - `id`: Identifiant unique de la room
- * - `host`: Informations sur le joueur hôte (celui qui a créé la room)
- *   - `userId`: Identifiant de l'utilisateur
- *   - `username`: Nom d'utilisateur
- *   - `socketId`: Identifiant de la connexion socket
- *   - `deckId`: Identifiant du deck utilisé par le joueur
- * - `opponent`: Informations sur le joueur adversaire (peut être undefined si personne n'a encore rejoint la room)
- *   - `userId`: Identifiant de l'utilisateur
- *   - `username`: Nom d'utilisateur
- *   - `socketId`: Identifiant de la connexion socket
- *   - `deckId`: Identifiant du deck utilisé par le joueur
- * - `status`: Statut actuel de la room, qui peut être "waiting" (en attente d'un adversaire), "fighting" (en cours de combat) ou "finished" (terminée)
+ * - `hostSocketId`: Identifiant de la socket du joueur hôte qui a créé la room
  */
 export interface Room {
-  id: string
-  host: {
-    userId: number
-    username: string
-    socketId: string
-    deckId: number
-  }
-  opponent?: {
-    userId: number
-    username: string
-    socketId: string
-    deckId: number
-  }
-  status: 'waiting' | 'fighting' | 'finished'
+  id: number
+  hostSocketId: string
+}
+
+/**
+ * Interface typée pour gérer la réponse du serveur lors de la création d'une room
+ * - `message`: Message d'information sur la création de la room
+ * - `roomId`: Identifiant de la room nouvellement créée, qui sera utilisé pour rejoindre la room ou démarrer une partie
+ */
+export interface RoomCreatedResponse {
+  message: string
+  roomId: number
 }
 
 /**
  * Interface typée pour gérer l'état d'un joueur, que ce soit l'hôte ou l'adversaire
- * - `userId`: Identifiant de l'utilisateur
- * - `username`: Nom d'utilisateur
- * - `handCards`: Cartes actuellement en main du joueur (pour l'adversaire, ces cartes sont cachées)
- * - `deckSize`: Nombre de cartes restantes dans le deck du joueur
- * - `fieldCard`: Carte actuellement posée sur le terrain par le joueur (peut être null si aucune carte n'est posée)
- * - `score`: Score actuel du joueur (nombre de Pokémon vaincu, de 0 à 3) pour déterminer le vainqueur du combat
+ * - `socketId`: Identifiant de la socket du joueur
+ * - `board`: Informations sur le plateau de jeu du joueur, incluant les cartes en main, la carte active sur le terrain, et le score actuel
  */
-export interface PlayerInfo {
-  userId: number
-  username: string
-  handCards: Card[]
-  deckSize: number
-  fieldCard: FieldCard | null
-  score: number
+export interface PlayerBoard {
+  socketId: string
+  board: {
+    activeCard: ActiveCard | null
+    deck: Card[]
+    hand: Card[]
+    score: number
+  }
 }
 
 /**
@@ -55,7 +42,7 @@ export interface PlayerInfo {
  * - `card`: La carte Pokémon posée sur le terrain
  * - `currentHp`: Points de vie actuels de la carte
  */
-export interface FieldCard {
+export interface ActiveCard {
   card: Card
   currentHp: number
 }
@@ -68,10 +55,21 @@ export interface FieldCard {
  * - `turn`: Indique à qui c'est le tour de jouer, soit "host" pour l'hôte, soit "opponent" pour l'adversaire
  */
 export interface GameState {
-  roomId: string
-  host: PlayerInfo
-  opponent: PlayerInfo // A les mêmes propriétés que l'hôte, sauf que les cartes en main sont cachées
-  turn: number
+  roomId: number
+  status: string
+  currentPlayerSocketId: string
+  host: PlayerBoard
+  guest: PlayerBoard
+}
+
+/**
+ * Interface typée pour gérer la réponse du serveur lors du démarrage d'une partie
+ * - `message`: Message d'information sur le démarrage de la partie
+ * - `gameState`: État initial du jeu partagé entre les deux joueurs au moment du démarrage de la partie
+ */
+export interface GameStartedResponse {
+  message: string
+  gameState: GameState
 }
 
 /**

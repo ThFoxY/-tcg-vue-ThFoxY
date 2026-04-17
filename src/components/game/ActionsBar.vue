@@ -50,12 +50,9 @@ const socketStore = useSocketStore()
 const canDraw = computed(() => {
   if (!socketStore.playerTurn) return false
 
-  const playerBoard =
-    socketStore.playerRole === 'hôte'
-      ? socketStore.gameBoards?.host
-      : socketStore.gameBoards?.opponent
+  const playerBoard = socketStore.playerBoard?.board
   if (!playerBoard) return false
-  return playerBoard.handCards.length < 5 && playerBoard.deckSize > 0
+  return playerBoard.hand.length < 5 && playerBoard.deck.length > 0
 })
 
 // RG5 : Le bouton Attaquer est désactivé si l'un des deux joueurs n'a pas de carte active
@@ -64,8 +61,8 @@ const canAttack = computed(() => {
   if (!socketStore.playerTurn) return false
 
   return (
-    !!socketStore.gameBoards?.host.fieldCard &&
-    !!socketStore.gameBoards?.opponent.fieldCard
+    !!socketStore.playerBoard?.board.activeCard &&
+    !!socketStore.opponentBoard?.board.activeCard
   )
 })
 </script>

@@ -19,7 +19,7 @@ const deckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pou
 
 // Liste de props
 defineProps<{
-  id: string // Stocke l'ID de la partie
+  id: number // Stocke l'ID de la partie
   host: string // Stocke le nom de l'hôte de la partie
   deckOptions: { label: string; value: number }[] // Stocke les options de decks disponibles pour rejoindre une partie
 }>()

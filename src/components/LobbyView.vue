@@ -21,7 +21,7 @@
           v-for="room in socketStore.rooms"
           :id="room.id"
           :key="room.id"
-          :host="room.host.username"
+          :host="room.hostSocketId"
           :deck-options="deckOptions"
           @join="(deckId: number) => handleJoinRoom(room.id, deckId)"
         />
@@ -32,23 +32,48 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { useMessage } from 'naive-ui'
+import { ref, watch } from 'vue'
 
 import PublicGame from '@/components/game/PublicGame.vue'
 import { useSocketStore } from '@/store/socket.store'
 
 const socketStore = useSocketStore()
+const message = useMessage()
 
 const selectedDeckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour créer une partie ou en rejoindre une
 
+// Affiche un message si un message d'information est disponible
+watch(
+  () => socketStore.message,
+  (msg) => {
+    if (msg) {
+      message.info(msg)
+      socketStore.message = null
+    }
+  },
+)
+
+// Affiche un message d'erreur si une erreur est disponible
+watch(
+  () => socketStore.error,
+  (err) => {
+    if (err) {
+      message.error(err)
+      socketStore.error = null
+    }
+  },
+)
+
+// Gère la logique pour créer une partie en fonction de l'ID du deck sélectionné
 const handleCreateRoom = () => {
   if (!selectedDeckId.value) return
 
   socketStore.createRoom(selectedDeckId.value)
 }
 
-//
-const handleJoinRoom = (roomId: string, deckId: number) => {
+// Gère la logique pour rejoindre une partie en fonction de l'ID de la salle et de l'ID du deck sélectionné
+const handleJoinRoom = (roomId: number, deckId: number) => {
   if (!deckId) return
 
   socketStore.joinRoom(roomId, deckId)

@@ -5,15 +5,20 @@ import { computed, ref } from 'vue'
 
 import { ROUTES } from '@/router'
 import router from '@/router'
-import { useAuthStore } from '@/store/auth.store'
-import type { GameResult, GameState, Room } from '@/types/socket'
+import type {
+  GameResult,
+  GameStartedResponse,
+  GameState,
+  Room,
+  RoomCreatedResponse,
+} from '@/types/socket'
 
 export const useSocketStore = defineStore('socket', () => {
   const socket = ref<Socket | null>(null)
   const socketId = ref<string | null>(null) // Stocke l'identifiant de la connexion socket
 
   const rooms = ref<Room[]>([]) // Stocke les salles disponibles dans le lobby
-  const currentRoom = ref<Room | null>(null) // Stocke la salle actuelle (peut être null si aucune salle n'a été rejointe ou créée)
+  const currentRoom = ref<{ id: number } | null>(null) // Stocke la salle actuelle (peut être null si aucune salle n'a été rejointe ou créée)
   const gameState = ref<GameState | null>(null) // Stocke l'état de la partie en cours (peut être null s'il n'y a pas de partie en cours)
   const gameResult = ref<GameResult | null>(null) // Stocke le résultat de la partie (peut être null si la partie n'est pas encore terminée)
 
@@ -54,13 +59,15 @@ export const useSocketStore = defineStore('socket', () => {
     })
 
     // 3. 'roomCreated' : Enregistre l'identifiant de la room
-    s.on('roomCreated', (room: Room) => {
-      currentRoom.value = room
+    s.on('roomCreated', (data: RoomCreatedResponse) => {
+      message.value = data.message
+      currentRoom.value = { id: data.roomId }
     })
 
     // 4. (RG4) 'gameStarted': Démarre la partie et redirige vers /game-room
-    s.on('gameStarted', (data: GameState) => {
-      gameState.value = data
+    s.on('gameStarted', (data: GameStartedResponse) => {
+      gameState.value = data.gameState
+      message.value = data.message
       router.push(ROUTES.GAME_ROOM)
     })
 
@@ -102,7 +109,7 @@ export const useSocketStore = defineStore('socket', () => {
     socket.value.emit('createRoom', { deckId })
   }
   // 2. 'joinRoom' : Rejoint une room existante
-  const joinRoom = (roomId: string, deckId: number) => {
+  const joinRoom = (roomId: number, deckId: number) => {
     if (!socket.value) return
     socket.value.emit('joinRoom', { roomId, deckId })
   }
@@ -128,22 +135,19 @@ export const useSocketStore = defineStore('socket', () => {
   }
 
   // --- Fonctions ---
-  const isConnected = computed(() => !!socket.value) // Évite l'erreur "Exported variable 'useSocketStore' has or is using 'Cookie' in..." parce que TypeScript et les dépendances >:(
-  const authStore = useAuthStore()
+  const isConnected = computed(() => !!socket.value?.connected) // Évite l'erreur "Exported variable 'useSocketStore' has or is using 'Cookie' in..." parce que TypeScript et les dépendances >:(
 
   // RG1 : Le store expose si c'est le tour du joueur courant
-  // 'turn' de gameState stocke l'identifiant de l'utilisateur ^^
   const playerTurn = computed(() => {
-    if (!gameState.value || !authStore.user) return false
-    return gameState.value.turn === authStore.user.id // Vrai si c'est le tour du joueur courant, sinon faux
+    if (!gameState.value || !socketId.value) return false
+    return gameState.value.currentPlayerSocketId === socketId.value
   })
 
   // RG2 : Le store expose le rôle du joueur (hôte ou adversaire)
-  const playerRole = computed(() => {
-    if (!gameState.value || !authStore.user) return null
-    if (gameState.value.host.userId === authStore.user.id) return 'hôte'
-    if (gameState.value.opponent?.userId === authStore.user.id)
-      return 'adversaire'
+  const playerRole = computed((): 'hôte' | 'adversaire' | null => {
+    if (!gameState.value || !socketId.value) return null
+    if (gameState.value.host.socketId === socketId.value) return 'hôte'
+    if (gameState.value.guest.socketId === socketId.value) return 'adversaire'
     return null
   })
 
@@ -152,8 +156,23 @@ export const useSocketStore = defineStore('socket', () => {
     if (!gameState.value) return null
     return {
       host: gameState.value.host,
-      opponent: gameState.value.opponent,
+      guest: gameState.value.guest,
     }
+  })
+
+  // FIX: Plus simple d'obtenir le board du joueur actuel et celui de l'adversaire séparément
+  const playerBoard = computed(() => {
+    if (!gameBoards.value || !playerRole.value) return null
+    return playerRole.value === 'hôte'
+      ? gameBoards.value.host
+      : gameBoards.value.guest
+  })
+
+  const opponentBoard = computed(() => {
+    if (!gameBoards.value || !playerRole.value) return null
+    return playerRole.value === 'hôte'
+      ? gameBoards.value.guest
+      : gameBoards.value.host
   })
 
   return {
@@ -182,5 +201,7 @@ export const useSocketStore = defineStore('socket', () => {
     playerTurn,
     playerRole,
     gameBoards,
+    playerBoard,
+    opponentBoard,
   }
 })

@@ -1,11 +1,11 @@
 <template>
-  <NFlex v-if="opponent" align="center" :gap="24">
-    <NStatistic label="KOs" :value="opponent.score ?? 0" />
+  <NFlex v-if="opponentBoard" align="center" :gap="24">
+    <NStatistic label="KOs" :value="opponentBoard.board.score ?? 0" />
     <PokemonCard
-      v-if="opponent.fieldCard"
+      v-if="opponentBoard.board.activeCard"
       size="md"
-      :pokemon="opponent.fieldCard.card"
-      :current-hp="opponent.fieldCard.currentHp ?? 0"
+      :pokemon="opponentBoard.board.activeCard.card"
+      :current-hp="opponentBoard.board.activeCard.currentHp ?? 0"
       :selected="false"
       :disabled="true"
     />
@@ -23,9 +23,5 @@ import { useSocketStore } from '@/store/socket.store'
 const socketStore = useSocketStore()
 
 // Récupère les informations de l'adversaire
-const opponent = computed(() =>
-  socketStore.playerRole === 'hôte'
-    ? socketStore.gameBoards?.opponent
-    : socketStore.gameBoards?.host,
-)
+const opponentBoard = computed(() => socketStore.opponentBoard)
 </script>
