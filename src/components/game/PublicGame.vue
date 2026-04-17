@@ -1,14 +1,15 @@
 <template>
-  <NCard title="Partie #{{ id }}">
+  <NCard :title="`Partie #${id}`">
     <p>Hôte : {{ host }}</p>
     <NSelect
       v-model:value="deckId"
       :options="deckOptions"
       placeholder="Sélectionner un deck"
-      @select="emit('join', deckId!)"
     />
     <NDivider />
-    <NButton :disabled="!deckId" type="primary">Rejoindre</NButton>
+    <NButton :disabled="!deckId" type="primary" @click="emit('join', deckId!)"
+      >Rejoindre</NButton
+    >
   </NCard>
 </template>
 
@@ -18,7 +19,7 @@ const deckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pou
 
 // Liste de props
 defineProps<{
-  id: number // Stocke l'ID de la partie
+  id: string // Stocke l'ID de la partie
   host: string // Stocke le nom de l'hôte de la partie
   deckOptions: { label: string; value: number }[] // Stocke les options de decks disponibles pour rejoindre une partie
 }>()

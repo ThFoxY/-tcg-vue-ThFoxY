@@ -1,20 +1,6 @@
 <template>
-  <PageTitle title="Jouer" :toggle-back="false"> </PageTitle>
-  <NFlex justify="space-around" wrap>
-    <NCard title="Créer une partie" style="width: 900px">
-      <NSelect
-        v-model:value="deckId"
-        :options="deckOptions"
-        placeholder="Sélectionner un deck"
-      />
-      <NDivider />
-      <NButton :disabled="!deckId" type="primary">Créer la partie</NButton>
-    </NCard>
-
-    <NCard title="Parties disponibles" style="width: 900px">
-      <NEmpty description="Aucune partie disponible pour l'instant 🥲" />
-    </NCard>
-  </NFlex>
+  <PageTitle title="Jouer" :toggle-back="false" />
+  <LobbyView :deck-options="deckOptions" />
   <PageTitle title="Mes decks" :toggle-back="false">
     <template #button>
       <NButton
@@ -81,27 +67,30 @@ import { useRouter } from 'vue-router'
 
 import BattleDecksList from '@/components/BattleDecksList.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
+import LobbyView from '@/components/LobbyView.vue'
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'
+import { useAuthStore } from '@/store/auth.store'
+import { useSocketStore } from '@/store/socket.store'
 import type { Card, Deck } from '@/types'
 
 const loadingBar = useLoadingBar()
 const message = useMessage()
 const api = useApi()
 const router = useRouter()
-
-const deckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour créer une partie
-const deckOptions = ref<{ label: string; value: number }[]>([]) // Stocke les options de decks disponibles pour créer une partie
+const socketStore = useSocketStore()
+const authStore = useAuthStore()
 
 const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérés via l'API
+const deckOptions = ref<{ label: string; value: number }[]>([]) // Stocke les options de decks disponibles pour créer une partie
 const cards = ref<Card[]>([]) // Stocke les cartes en objets Card récupérées via l'API
 const showModal = ref(false) // Affiche ou non la modal de confirmation de suppression
 const selectedDeckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour la suppression
 const isLoading = ref<boolean>(false) // Stocke l'état de chargement de l'API
 
 // Fonction anonyme asynchrone qui récupère les decks et toutes les cartes Pokémon une seule fois depuis l'API
-// Explication : avant, chaque composant BattleDeck appelait l'API pour récupérer toutes les cartes, puis se les approprier en fonction de ses besoins.
-// Maintenant, l'appel est unique, puis transmis par les props. Cela évite un saut visuel lors du chargement des decks.
+// Explication : avant, chaque composant BattleDeck appelait l'API pour récupérer toutes les cartes, puis se les approprier en fonction de ses besoins
+// Maintenant, l'appel est unique, puis transmis par les props. Cela évite un saut visuel lors du chargement des decks
 const fetchData = async () => {
   isLoading.value = true
   loadingBar.start()
@@ -152,7 +141,11 @@ const handleDeleteDeck = async () => {
 }
 
 // Monte le composant et récupère les decks et les cartes depuis l'API
-onMounted(fetchData)
+onMounted(async () => {
+  if (!authStore.token) return
+  socketStore.connect(authStore.token) // Connecte le socket dès que la page est montée
+  await fetchData()
+})
 </script>
 
 <style scoped>
