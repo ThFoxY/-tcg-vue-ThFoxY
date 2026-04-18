@@ -22,6 +22,6 @@ import { useSocketStore } from '@/store/socket.store'
 
 const socketStore = useSocketStore()
 
-// Récupère les informations de l'adversaire
+// RG2 : Récupère les informations de l'adversaire
 const opponentBoard = computed(() => socketStore.opponentBoard)
 </script>

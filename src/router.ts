@@ -24,7 +24,7 @@ export const ROUTES = {
   CREATE_DECK: '/create-deck',
   DECK_DETAIL: '/decks/:id',
   EDIT_DECK: '/decks/:id/edit',
-  GAME_ROOM: '/game-room',
+  GAME_ROOM: '/game', // FIX: 'game' !== '/game-room' comme demandé dans l'issue #3
 } as const
 
 const routes = [

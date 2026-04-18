@@ -67,19 +67,15 @@ import { useRouter } from 'vue-router'
 
 import BattleDecksList from '@/components/BattleDecksList.vue'
 import PageTitle from '@/components/layout/PageTitle.vue'
-import LobbyView from '@/components/LobbyView.vue'
+import LobbyView from '@/components/LobbyView.vue' // RG6
 import { useApi } from '@/composables/useApi'
 import { ROUTES } from '@/router'
-import { useAuthStore } from '@/store/auth.store'
-import { useSocketStore } from '@/store/socket.store'
 import type { Card, Deck } from '@/types'
 
 const loadingBar = useLoadingBar()
 const message = useMessage()
 const api = useApi()
 const router = useRouter()
-const socketStore = useSocketStore()
-const authStore = useAuthStore()
 
 const decks = ref<Deck[]>([]) // Stocke les decks en objets Deck récupérés via l'API
 const deckOptions = ref<{ label: string; value: number }[]>([]) // Stocke les options de decks disponibles pour créer une partie
@@ -142,8 +138,6 @@ const handleDeleteDeck = async () => {
 
 // Monte le composant et récupère les decks et les cartes depuis l'API
 onMounted(async () => {
-  if (!authStore.token) return
-  socketStore.connect(authStore.token) // Connecte le socket dès que la page est montée
   await fetchData()
 })
 </script>

@@ -44,10 +44,10 @@ import { useSocketStore } from '@/store/socket.store'
 
 const socketStore = useSocketStore()
 
-// Récupère les informations sur le joueur courant
+// RG2 : Récupère les informations sur le joueur courant
 const playerBoard = computed(() => socketStore.playerBoard)
 
-// RG2 : Détermine si les cartes sont jouables (tour du joueur courant et n'est pas déjà sur le terrain)
+// RG2/RG3 : Détermine si les cartes sont jouables (tour du joueur courant et n'est pas déjà sur le terrain)
 // computed() permet de mettre à jour le booléen :disabled des cartes dès lors que les dépendances sont redéfinies (tour et carte jouée)
 const isCardPlayable = computed(
   () => socketStore.playerTurn && !playerBoard.value?.board.activeCard,

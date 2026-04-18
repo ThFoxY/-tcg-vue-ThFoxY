@@ -64,7 +64,7 @@ export const useSocketStore = defineStore('socket', () => {
       currentRoom.value = { id: data.roomId }
     })
 
-    // 4. (RG4) 'gameStarted': Démarre la partie et redirige vers /game-room
+    // 4. (RG5) 'gameStarted': Démarre la partie et redirige vers /game
     s.on('gameStarted', (data: GameStartedResponse) => {
       gameState.value = data.gameState
       message.value = data.message
@@ -125,7 +125,7 @@ export const useSocketStore = defineStore('socket', () => {
   // 4. 'endTurn' : Terminer son tour
   const endTurn = () => socket.value?.emit('endTurn')
 
-  // 'resetGame' : Remet le store à son état initial
+  // (RG6) 'resetGame' : Remet le store à son état initial
   const resetGame = () => {
     currentRoom.value = null
     gameState.value = null
@@ -136,6 +136,8 @@ export const useSocketStore = defineStore('socket', () => {
 
   // --- Fonctions ---
   const isConnected = computed(() => !!socket.value?.connected) // Évite l'erreur "Exported variable 'useSocketStore' has or is using 'Cookie' in..." parce que TypeScript et les dépendances >:(
+
+  const getAvailableRooms = () => socket.value?.emit('getRooms') // FIX: Lorsque le navigateur est raffraîchi (ou qu'un utilisateur se connecte après la mise à jour de la liste), le store est réinitialisé et la liste des rooms devient vide
 
   // RG1 : Le store expose si c'est le tour du joueur courant
   const playerTurn = computed(() => {
@@ -161,6 +163,7 @@ export const useSocketStore = defineStore('socket', () => {
   })
 
   // FIX: Plus simple d'obtenir le board du joueur actuel et celui de l'adversaire séparément
+  // RG2 : Le store expose le plateau du joueur actuel
   const playerBoard = computed(() => {
     if (!gameBoards.value || !playerRole.value) return null
     return playerRole.value === 'hôte'
@@ -168,6 +171,7 @@ export const useSocketStore = defineStore('socket', () => {
       : gameBoards.value.guest
   })
 
+  // RG2 : Le store expose le plateau de l'adversaire (invité)
   const opponentBoard = computed(() => {
     if (!gameBoards.value || !playerRole.value) return null
     return playerRole.value === 'hôte'
@@ -198,6 +202,7 @@ export const useSocketStore = defineStore('socket', () => {
 
     // Fonctions
     isConnected,
+    getAvailableRooms,
     playerTurn,
     playerRole,
     gameBoards,

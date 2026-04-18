@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { useMessage } from 'naive-ui'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 import PublicGame from '@/components/game/PublicGame.vue'
 import { useSocketStore } from '@/store/socket.store'
@@ -41,7 +41,7 @@ import { useSocketStore } from '@/store/socket.store'
 const socketStore = useSocketStore()
 const message = useMessage()
 
-const selectedDeckId = ref<number | null>(null) // Stocke l'ID du deck sélectionné pour créer une partie ou en rejoindre une
+const selectedDeckId = ref<number | null>(null) // RG3/RG4 : Stocke l'ID du deck sélectionné pour créer une partie ou en rejoindre une
 
 // Affiche un message si un message d'information est disponible
 watch(
@@ -83,4 +83,9 @@ const handleJoinRoom = (roomId: number, deckId: number) => {
 defineProps<{
   deckOptions: { label: string; value: number }[] // Stocke les options de decks disponibles pour créer une partie ou en rejoindre une
 }>()
+
+// FIX: Monte le composant et récupère la liste des salles disponibles (voir App.vue pour l'appel Socket.IO initial avant le montage)
+onMounted(() => {
+  socketStore.getAvailableRooms()
+})
 </script>

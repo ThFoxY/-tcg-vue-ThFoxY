@@ -18,6 +18,7 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+// RG1 : La page affiche trois zones dans l'ordre : adversaire, barre d'actions, joueur
 import ActionsBar from '@/components/game/ActionsBar.vue'
 import OpponentSide from '@/components/game/OpponentSide.vue'
 import PlayerSide from '@/components/game/PlayerSide.vue'
