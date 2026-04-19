@@ -13,6 +13,7 @@
               v-model:value="formValue.email"
               placeholder="votre@email.com"
               type="email"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NFormItem required path="password" label="Mot-de-passe">
@@ -21,6 +22,7 @@
               show-password-on="click"
               placeholder="••••••••"
               type="password"
+              :disabled="isLoading"
             />
           </NFormItem>
           <NButton
@@ -56,13 +58,14 @@ const authStore = useAuthStore()
 const message = useMessage()
 const router = useRouter()
 
-const formRef = ref<FormInst | null>(null)
+const formRef = ref<FormInst | null>(null) // Référence au formulaire
 const formValue = ref<SignInPayload>({
   email: '',
   password: '',
-})
-const isLoading = ref<boolean>(false)
+}) // Payload du formulaire de connexion
+const isLoading = ref<boolean>(false) // Stocke l'état de chargement de l'API
 
+// Défini les règles de validation du formulaire
 const rules: FormRules = {
   email: {
     required: true,
@@ -78,7 +81,7 @@ const rules: FormRules = {
   },
 }
 
-// Fonction anonyme qui gère la connexion à la validation du formulaire
+// Fonction anonyme asynchrone qui gère la connexion à la validation du formulaire
 const handleSignIn = async () => {
   // Valide le formulaire avant de soumettre (affiche les erreurs si invalides)
   formRef.value?.validate(async (errors: FormValidationError[] | undefined) => {
@@ -97,7 +100,7 @@ const handleSignIn = async () => {
         router.replace(ROUTES.HOME)
       } catch (error) {
         message.error(
-          `Erreur lors de l'inscription : ${(error as Error).message}`,
+          `Erreur lors de la connexion : ${(error as Error).message}`, // FIX: Correction d'une erreur de frappe ^^
         )
       } finally {
         isLoading.value = false
