@@ -8,8 +8,13 @@
         :rules="rules"
         @submit.prevent="handleCreateDeck"
       >
-        <NFlex justify="start" align="center">
-          <NFormItem required path="name" label="Nom du deck">
+        <NFlex justify="start" align="start" vertical>
+          <NFormItem
+            required
+            path="name"
+            label="Nom du deck"
+            style="width: 100%"
+          >
             <NInput
               v-model:value="formValue.name"
               placeholder="Mon super deck"
@@ -17,16 +22,19 @@
               :disabled="isLoading"
             />
           </NFormItem>
-          <NButton
-            :disabled="
-              !formValue.name || (selectedCardsIds.length !== 10 && !isLoading)
-            "
-            type="primary"
-            attr-type="submit"
-          >
-            Créer le deck
-          </NButton>
-          <div>{{ selectedCardsIds.length }}/10 cartes sélectionnées</div>
+          <NFlex justify="space-between" align="center" style="width: 100%">
+            <NText>{{ selectedCardsIds.length }}/10 cartes sélectionnées</NText>
+            <NButton
+              :disabled="
+                !formValue.name ||
+                (selectedCardsIds.length !== 10 && !isLoading)
+              "
+              type="primary"
+              attr-type="submit"
+            >
+              Créer le deck
+            </NButton>
+          </NFlex>
         </NFlex>
       </NForm>
       <NDivider />

@@ -3,7 +3,6 @@
     <template #button>
       <NButton
         type="primary"
-        size="small"
         @click="router.push(ROUTES.EDIT_DECK.replace(':id', deckId.toString()))"
       >
         <template #icon>

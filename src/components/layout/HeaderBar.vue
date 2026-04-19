@@ -1,8 +1,5 @@
 <template>
-  <NLayoutHeader
-    bordered
-    style="padding: 0 24px; position: sticky; top: 0; z-index: 100"
-  >
+  <NLayoutHeader bordered style="position: sticky; top: 0; z-index: 100">
     <NSpace justify="space-between" align="center" style="height: 56px">
       <NSpace align="center" :size="16">
         <RouterLink to="/">TCG SPA</RouterLink>
@@ -20,7 +17,7 @@
         <NText depth="3">{{ authStore.user?.username }}</NText>
         <NButton
           v-if="authStore.isAuthenticated"
-          size="small"
+          type="error"
           @click="handleSignOut"
           >Déconnexion</NButton
         >

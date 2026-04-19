@@ -1,5 +1,5 @@
 <template>
-  <NGrid cols="4" :x-gap="16" :y-gap="16">
+  <NGrid responsive="screen" cols="2 s:3 m:4" :x-gap="16" :y-gap="16">
     <NGridItem v-for="pokemon in pokemons" :key="pokemon.id">
       <PokemonCard
         size="md"

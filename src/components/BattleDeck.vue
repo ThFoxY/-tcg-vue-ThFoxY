@@ -1,6 +1,6 @@
 <template>
   <NCard :title="deck.name">
-    <NGrid cols="5" :x-gap="8" :y-gap="8">
+    <NGrid responsive="screen" cols="2 s:3 m:4 l:5" :x-gap="8" :y-gap="8">
       <NGridItem v-for="card in deck.cards" :key="card.cardId">
         <PokemonCard
           v-if="getCard(card)"

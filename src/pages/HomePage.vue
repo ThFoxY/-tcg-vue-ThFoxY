@@ -3,11 +3,7 @@
   <LobbyView :deck-options="deckOptions" />
   <PageTitle title="Mes decks" :toggle-back="false">
     <template #button>
-      <NButton
-        type="primary"
-        size="small"
-        @click="router.push(ROUTES.CREATE_DECK)"
-      >
+      <NButton type="primary" @click="router.push(ROUTES.CREATE_DECK)">
         <template #icon>
           <NIcon>
             <IconPlus />
