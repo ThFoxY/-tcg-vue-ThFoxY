@@ -10,7 +10,7 @@ import type { SignInPayload, SignUpPayload, User } from '@/types'
  * Le token JWT et l'utilisateur sont initialisés à partir du localStorage grâce au composable useStorage.
  */
 export const useAuthStore = defineStore('auth', () => {
-  const { get, set } = useStorage()
+  const { get, set, remove } = useStorage()
   const api = useApi()
 
   // Récupère le token et l'utilisateur depuis le localStorage au moment de l'initialisation du store
@@ -18,9 +18,9 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(get<User | null>('user'))
 
   // Computed pour savoir si l'utilisateur est authentifié (présence d'un token et d'un utilisateur)
-  const isAuthentificated = computed(() => {
+  const isAuthenticated = computed(() => {
     return token.value && user.value ? true : false
-  })
+  }) // FIX: Correction d'une faute de traduction (isAuthentificated != isAuthenticated ^^)
 
   // Fonction anonyme pour enregistrer le token et l'utilisateur (dans le store et dans le cache) à l'inscription
   const signUp = async (payload: SignUpPayload) => {
@@ -51,11 +51,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Fonction anonyme pour supprimer le token et l'utilisateur (dans le store et dans le cache) à la déconnexion
   const signOut = () => {
-    set('token', null)
-    set('user', null)
+    remove('token', 'user') // FIX: useStorage propose la méthode remove, autant l'utiliser !
     token.value = null
     user.value = null
   }
 
-  return { token, user, isAuthentificated, signUp, signIn, signOut }
+  return { token, user, isAuthenticated, signUp, signIn, signOut }
 })
